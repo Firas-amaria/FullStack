@@ -49,7 +49,7 @@ async function loginUser(event) {
 
     // Redirect based on role
     window.location.href =
-      data.user.role === "admin" ? "dashboard.html" : "courses.html";
+      data.user.role === "admin" ? "dashboard-admin.html" : "courses.html";
   } else {
     const errorData = await response.json();
     document.getElementById("login-error").innerText = errorData.error;
