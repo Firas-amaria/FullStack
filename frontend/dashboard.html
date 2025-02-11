@@ -40,8 +40,7 @@
             transform: scale(1.03);
         }
 
-        .btn-delete,
-        .btn-manage {
+        .btn-delete {
             background-color: #dc3545;
             color: white;
             padding: 8px 12px;
@@ -57,7 +56,6 @@
         }
 
         #admin-section,
-        #instructor-section,
         #student-section {
             display: none;
         }
@@ -71,24 +69,14 @@
 
         <!-- Admin Section -->
         <div id="admin-section">
-            <h2>Manage Users</h2>
+            <h2>All Users</h2>
             <div id="user-list" class="grid-container"></div>
-            <h2>Manage Courses</h2>
-            <div id="course-list" class="grid-container"></div>
-        </div>
-
-        <!-- Instructor Section -->
-        <div id="instructor-section">
-            <h2>Your Courses</h2>
-            <div id="instructor-courses" class="grid-container"></div>
-            <h2>Students in Your Courses</h2>
-            <div id="students-list" class="grid-container"></div>
         </div>
 
         <!-- Student Section -->
         <div id="student-section">
-            <h2>Your Enrolled Courses</h2>
-            <div id="student-courses" class="grid-container"></div>
+            <h2>Your Courses</h2>
+            <div id="student-dashboard"></div>
         </div>
     </div>
 
