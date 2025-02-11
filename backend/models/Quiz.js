@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+//in the course page ,the instructure will have the option to add the quiz ,question are writen again everytime
 const quizSchema = new mongoose.Schema({
   course: {
     type: mongoose.Schema.Types.ObjectId,
