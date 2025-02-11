@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הוספת קורס חדש</title>
+</head>
+<body>
+    <h1>הוספת קורס חדש</h1>
+    <form id="course-form">
+        <label for="course-name">שם הקורס:</label>
+        <input type="text" id="course-name" required>
+    
+        <label for="course-description">תיאור הקורס:</label>
+        <textarea id="course-description" required></textarea>
+    
+        <label for="instructor-name">שם המרצה:</label>
+        <input type="text" id="instructor-name" required>
+
+        <button type="submit">הוסף קורס</button>
+    </form>
+
+    <script>
+        document.getElementById("course-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const courseName = document.getElementById("course-name").value;
+            const courseDescription = document.getElementById("course-description").value;
+            const instructorName = document.getElementById("instructor-name").value;
+
+            const courseData = {
+                courseName,
+                courseDescription,
+                instructorName
+            };
+
+            try {
+                const response = await fetch("http://localhost:3000/courses", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(courseData),
+                });
+
+                if (response.ok) {
+                    const course = await response.json();
+                    console.log("קורס נוסף בהצלחה:", course);
+                } else {
+                    const error = await response.json();
+                    console.log("שגיאה בהוספת הקורס:", error);
+                }
+            } catch (error) {
+                console.log("שגיאה בשליחת הקורס:", error);
+            }
+        });
+    </script>
+</body>
+</html>
