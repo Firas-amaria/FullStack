@@ -1,75 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register | LMS</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <style>
-        /* Form Styles */
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            /* Adds space between fields */
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-
-        /* Button Styling */
-        .btn {
-            margin-top: 10px;
-            padding: 14px;
-            font-size: 18px;
-        }
-
-        /* Error Message */
-        #register-error {
-            color: red;
-            font-size: 14px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        /* Login Link */
-        .link {
-            margin-top: 20px;
-            font-size: 14px;
-        }
-    </style>
+    <title>Add User</title>
 </head>
-
 <body>
-    <!-- Header -->
-    <header>Learning Management System</header>
-
-    <!-- Main Container -->
     <div class="container">
-        <h1>Register</h1>
-
-        <!-- Register Form -->
-        <form id="register-form">
-            <input type="text" id="username" placeholder="Username" required>
-            <input type="email" id="email" placeholder="Email" required>
-            <input type="password" id="password" placeholder="Password" required>
-            <button type="submit" class="btn">Register</button>
+        <h1>Add New User</h1>
+        <form id="user-form" autocomplete="on">
+            <label for="customId">Custom ID:</label>
+            <input type="text" id="customId" name="customId" autocomplete="off" required>
+            
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" autocomplete="off" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" autocomplete="email" required>
+            
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" autocomplete="new-password" required>
+            
+            
+            <button type="submit">Add User</button>
         </form>
 
-        <!-- Error Message -->
-        <p id="register-error">Error creating account</p>
 
-        <!-- Login Link -->
-        <p class="link">Already have an account? <a href="login.html">Login here</a></p>
-    </div>
+    <script >
+        const API_URL = "http://localhost:3000/users";
 
-    <script src="js/auth.js"></script>
+// יצירת משתמש חדש
+document.getElementById('user-form').addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const customId = document.getElementById('customId').value;
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    // const admin = document.getElementById('admin').value;
+
+
+    // בדיקה אם ה-ID הוא באורך 9 ספרות ורק ספרות
+    if (!/^\d{9}$/.test(customId)) {
+        alert("ה-ID חייב להיות 9 ספרות בלבד");
+        return;
+    }
+
+    // בדיקה אם יש כבר משתמש עם אותו אימייל
+    try {
+        const response = await fetch(API_URL);
+        const users = await response.json();
+
+        const emailExists = users.some(user => user.email === email);
+        if (emailExists) {
+            alert("יש כבר משתמש עם אימייל זה");
+            return;
+        }
+
+        // אם לא היו בעיות, נמשיך ביצירת המשתמש
+        const newUser = { customId, name, email, password, admin: 0 }; // admin=0 מציין משתמש רגיל
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newUser)
+            });
+
+            if (response.ok) {
+                console.log("User created successfully!");
+                document.getElementById('user-form').reset();
+            } else {
+                const error = await response.json();
+                console.log("Error creating user:", error);
+            }
+        } catch (error) {
+            console.log("Error submitting user:", error);
+        }
+    } catch (error) {
+        console.error("Error fetching users:", error);
+    }
+});
+
+    </script>
 </body>
-
 </html>
