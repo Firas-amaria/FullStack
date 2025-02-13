@@ -133,29 +133,22 @@ async function deleteUser(userId, button) {
 
 async function loadAdminName() {
   try {
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      alert("Unauthorized! Please log in again.");
-      window.location.href = "login.html"; // Redirect to login
-      return;
-    }
-
-    // Fetch the current user
-    const response = await fetch(`${API_URL}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!response.ok) throw new Error("Failed to fetch admin info");
-
-    const user = await response.json();
-
     // Fix: Use `username` instead of `name`
-    document.getElementById("username").innerText = user.username || "Admin";
+    document.getElementById("username").innerText =
+      localStorage.getItem("username") || "Admin";
   } catch (error) {
     console.error("Error loading admin info:", error);
   }
 }
+
+// Logout function
+function logout() {
+  localStorage.removeItem("token"); // Remove token
+  window.location.href = "login.html"; // Redirect to login page
+}
+
+// Attach logout function to the button
+document.getElementById("logout-btn").addEventListener("click", logout);
 
 // Load admin name and users when the page loads
 document.addEventListener("DOMContentLoaded", () => {
