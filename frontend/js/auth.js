@@ -44,12 +44,13 @@ async function loginUser(event) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("username", data.user.username);
     localStorage.setItem("role", data.user.role);
+    
 
     alert(`✅ Welcome, ${data.user.username}!`);
 
     // Redirect based on role
     window.location.href =
-      data.user.role === "admin" ? "dashboard.html" : "courses.html";
+      data.user.role === "admin" ? "dashboard.html" : "student-dashboard.html";
   } else {
     const errorData = await response.json();
     document.getElementById("login-error").innerText = errorData.error;

@@ -42,11 +42,7 @@ async function loadUsers() {
   });
 }
 
-// ✅ Load student dashboard
-async function loadStudentDashboard() {
-  document.getElementById("student-dashboard").innerHTML =
-    "<p>Student-specific content here...</p>";
-}
+
 
 // ✅ Delete a user (Admin only)
 async function deleteUser(id) {

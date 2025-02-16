@@ -47,3 +47,7 @@ app.use("/submissions", submissionRoutes);
 
 const adminRoutes = require("./routes/adminRoutes");
 app.use("/admin", adminRoutes);
+
+
+const userRoutes = require("./routes/userRoutes");
+app.use("/users", userRoutes);

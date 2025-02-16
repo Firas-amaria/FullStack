@@ -37,15 +37,17 @@ router.post(
 /**
  * ✅ Get All Courses (Public - Anyone Can View)
  */
+
+
 router.get("/", async (req, res) => {
   try {
     const courses = await Course.find().populate(
       "instructor",
       "username email"
-    );
+    );//fetch instructor details
     res.json(courses);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Failed to fetch courses" });
   }
 });
 
