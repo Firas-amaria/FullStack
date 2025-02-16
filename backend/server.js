@@ -15,9 +15,10 @@ const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/LMS-System
 
 // Connect to MongoDB
 mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(MONGO_URI)
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
+
 
 // Logging Middleware (Keep only one)
 app.use((req, res, next) => {
@@ -37,6 +38,7 @@ app.get("/protected", authenticateUser, (req, res) => {
 
 const courseRoutes = require("./routes/courseRoutes");
 app.use("/courses", courseRoutes);
+
 
 const enrollmentRoutes = require("./routes/enrollmentRoutes");
 app.use("/enrollments", enrollmentRoutes);

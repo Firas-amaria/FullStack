@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Courses</title>
+</head>
+<body>
+  <h1>All Courses</h1>
+
+  <!-- שדה חיפוש -->
+  <input type="text" id="searchInput" placeholder="Search by course name..." oninput="searchCourses()">
+
+  <div id="courses-list">
+    <!-- הקורסים יתווספו כאן -->
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:3000/courses"; // ה-API של השרת
+
+    // פונקציה לשליפת כל הקורסים
+    async function fetchAllCourses() {
+      try {
+        const response = await fetch(`${API_URL}/courses`);
+        
+        if (response.ok) {
+          const courses = await response.json();
+          displayCourses(courses); // הצגת הקורסים
+        } else {
+          console.error("Unable to fetch courses");
+        }
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    }
+
+  
+
+    function displayCourses(courses) {
+      const coursesListDiv = document.getElementById("courses-list");
+      coursesListDiv.innerHTML = ""; 
+
+      if (courses.length === 0) {
+        coursesListDiv.innerHTML = "<p>No courses available.</p>";
+      } else {
+        courses.forEach(course => {
+          const courseDiv = document.createElement("div");
+          courseDiv.classList.add("course");
+          courseDiv.innerHTML = `
+            <h3><strong>Course Name:</strong> ${course.courseName}</h3>
+            <p><strong>Description:</strong> ${course.courseDescription}</p>
+            <p><strong>Instructor ID:</strong> ${course.instructorID}</p>
+            <p><strong>Course Code:</strong> ${course._id}</p> <!-- הוספנו את קוד הקורס -->
+            <button onclick="deleteCourse('${course._id}')">Delete Course</button> <!-- כפתור למחיקה -->
+            <button onclick="editCourse('${course._id}')">Edit Course</button> <!-- כפתור לעריכה -->
+          `;
+          coursesListDiv.appendChild(courseDiv);
+        });
+      }
+    }
+
+
+    async function searchCourses() {
+    const searchInput = document.getElementById("searchInput"); // שם נכון
+    if (!searchInput) {
+        console.error("Search input not found!");
+        return;
+    }
+
+    const searchQuery = searchInput.value.trim();
+
+    try {
+        const response = await fetch(`http://localhost:3000/courses/search?query=${searchQuery}`);
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error("Server error:", errorData);
+            throw new Error("Unable to search courses");
+        }
+
+        const courses = await response.json();
+        displayCourses(courses);
+    } catch (error) {
+        console.error("Error fetching courses:", error);
+    }
+}
+
+
+    // פונקציה לעריכת קורס
+    function editCourse(courseId) {
+        // שמור את ה-ID של הקורס ב-localStorage
+        localStorage.setItem('courseId', courseId);
+        
+        // העבר את המשתמש לדף העריכה
+        window.location.href = 'course-detail.html';
+    }
+
+    
+    // פונקציה למחיקת קורס
+    async function deleteCourse(courseId) {
+      try {
+        const response = await fetch(`${API_URL}/courses/${courseId}`, {
+          method: 'DELETE',
+        });
+
+        if (response.ok) {
+          alert("Course deleted successfully");
+          fetchAllCourses(); // רענן את רשימת הקורסים אחרי המחיקה
+        } else {
+          console.error("Unable to delete course");
+        }
+      } catch (error) {
+        console.error("Error deleting course:", error);
+      }
+    }
+    console.log(localStorage.getItem('courseId')); // הדפסת ה-ID של הקורס
+
+    // קריאה לפונקציה לשליפת הקורסים כשנטען הדף
+    document.addEventListener("DOMContentLoaded", function() {
+      fetchAllCourses(); // שליפת כל הקורסים
+    });
+  </script>
+</body>
+</html>

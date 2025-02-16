@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Course</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+
+    button {
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .course-details {
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .course-details input,
+    .course-details textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .course-details label {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Edit Course</h1>
+  
+  <div class="course-details">
+    <label for="courseName">Course Name:</label>
+    <input type="text" id="courseName" placeholder="Course Name" required>
+
+    <label for="courseDescription">Course Description:</label>
+    <textarea id="courseDescription" placeholder="Course Description" required></textarea>
+
+    <label for="courseCode">Course Code (ID):</label>
+    <input type="text" id="courseCode" placeholder="Course Code" disabled>
+
+    <button onclick="saveCourse()">Save Changes</button>
+    <button onclick="window.location.href='index.html'">Back to Course List</button>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:3000/courses";
+
+    const courseId = localStorage.getItem('courseId');
+if (!courseId) {
+  alert("No course ID found in localStorage.");
+} else {
+  console.log("Course ID:", courseId);  // לוודא שה- ID נכון
+}
+
+
+    // פונקציה לטעינת פרטי הקורס
+    async function fetchCourseDetails() {
+      if (!courseId) {
+        alert("No course ID found.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/${courseId}`);
+        if (response.ok) {
+          const course = await response.json();
+          document.getElementById('courseName').value = course.courseName;
+          document.getElementById('courseDescription').value = course.courseDescription;
+          document.getElementById('courseCode').value = course._id; // הצגת ה-ID של הקורס
+        } else {
+          console.error("Unable to fetch course details");
+        }
+      } catch (error) {
+        console.error("Error fetching course details:", error);
+      }
+    }
+    console.log("Course ID from localStorage:", localStorage.getItem('courseId'));
+
+    // // פונקציה לשמירת שינויים
+    async function saveCourse() {
+        console.log("Course ID from localStorage:", localStorage.getItem('courseId'));
+
+      const courseName = document.getElementById('courseName').value;
+      const courseDescription = document.getElementById('courseDescription').value;
+
+      try {
+        const response = await fetch(`${API_URL}/${courseId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            courseName,
+            courseDescription
+          })
+        });
+
+        if (response.ok) {
+          alert("Course updated successfully");
+          window.location.href = 'index.html';  // חזרה לרשימת הקורסים לאחר השמירה
+        } else {
+          console.error("Unable to update course");
+        }
+      } catch (error) {
+        console.error("Error saving course:", error);
+      }
+    }
+
+    // קריאה לפונקציה בעת טעינת הדף
+    document.addEventListener("DOMContentLoaded", function() {
+      fetchCourseDetails(); // שליפת פרטי הקורס
+    });
+  </script>
+
+</body>
+</html>

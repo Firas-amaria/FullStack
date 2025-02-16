@@ -32,4 +32,84 @@ router.get('/courses/instructor/:instructorID', async (req, res) => {
   }
 });
 
+// route לשליפת כל הקורסים
+router.get('/courses', async (req, res) => {
+  try {
+    const courses = await Course.find(); 
+    res.status(200).json(courses);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+rrouter.get('/courses/search', async (req, res) => {
+  try {
+    const { query } = req.query;
+
+    if (!query) {
+      return res.status(400).json({ error: "הפרמטר query חסר" });
+    }
+
+    // בדוק אם השאילתא מחפשת לפי שם הקורס ולא ב-ID
+    const courses = await Course.find({ 
+      courseName: { $regex: query, $options: "i" } // חיפוש לפי שם קורס
+    });
+
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error("❌ שגיאה בחיפוש קורסים:", error.stack);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+// Route למחיקת קורס
+router.delete("/courses/:courseId", async (req, res) => {
+  try {
+    const course = await Course.findByIdAndDelete(req.params.courseId);
+    if (!course) {
+      return res.status(404).send("Course not found");
+    }
+    res.status(200).send("Course deleted successfully");
+  } catch (err) {
+    res.status(500).send("Error deleting course");
+  }
+});
+
+
+
+// Route לעדכון קורס
+router.put('/:courseId', async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const { courseName, courseDescription } = req.body;
+
+    const course = await Course.findByIdAndUpdate(courseId, { courseName, courseDescription }, { new: true });
+
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+// Route לשליפת קורס לפי ה-ID שלו
+router.get('/:courseId', async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
 module.exports = router;
