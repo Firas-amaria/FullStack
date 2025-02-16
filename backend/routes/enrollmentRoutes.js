@@ -11,6 +11,9 @@ const router = express.Router();
 /**
  * ✅ Enroll in a Course (Students Only)
  */
+
+
+
 router.post(
   "/:courseId",
   authenticateUser,
@@ -47,15 +50,21 @@ router.post(
 /**
  * ✅ Get All Enrolled Courses for a Student
  */
+
+
 router.get(
   "/my-courses",
   authenticateUser,
   authorizeRole(["student"]),
   async (req, res) => {
     try {
-      const enrollments = await Enrollment.find({
-        student: req.user.userId,
-      }).populate("course");
+      const enrollments = await Enrollment.find({ student: req.user.userId })
+        .populate({
+          path: "course",
+          populate: { path: "instructor", select: "username email" }, // ✅ Ensure "username" is fetched
+          select: "title materials instructor", // ✅ Fetch only required fields
+        });
+
       res.json(enrollments);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -63,6 +72,30 @@ router.get(
   }
 );
 
+/*
+router.get(
+  "/my-courses",
+  authenticateUser,
+  authorizeRole(["student"]),
+  async (req, res) => {
+    try {
+      console.log("User data:", req.user); // 🔍 Debugging Line
+
+      if (!req.user || !req.user.userId) {
+        return res.status(400).json({ error: "Missing student ID" });
+      }
+
+      const enrollments = await Enrollment.find({
+        student: req.user.userId,
+      }).populate("course");
+
+      res.json(enrollments);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
+*/
 /**
  * ✅ Get All Enrolled Students for a Course (Instructor Only)
  */

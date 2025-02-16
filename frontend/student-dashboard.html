@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | LMS</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .container {
+            max-width: 80%;
+            padding: 30px;
+        }
+
+        h2 {
+            margin-top: 20px;
+            border-bottom: 2px solid #6a0dad;
+            padding-bottom: 5px;
+            text-align: left;
+        }
+
+        /* Student Navigation */
+        .student-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #6a0dad;
+            padding: 10px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .nav-item {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 8px 15px;
+        }
+
+        .nav-item:hover {
+            background-color: #5a0cad;
+            border-radius: 5px;
+        }
+
+        /* Find Course Button */
+        .find-course-btn {
+            background-color: grey;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .find-course-btn:hover {
+            background-color: #555;
+        }
+
+        /* My Courses */
+        .course-container {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .course-header {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            text-align: center;
+        }
+
+        .course-title {
+            font-weight: bold;
+            font-size: 18px;
+            text-decoration: none;
+            color: #6a0dad;
+            text-align: left;
+        }
+
+        .course-title:hover {
+            text-decoration: underline;
+        }
+
+        .lecturer-name {
+            color: grey;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .latest-update {
+            font-weight: bold;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: left;
+        }
+    </style>
+</head>
+
+<body>
+    <header>Dashboard</header>
+
+    <!-- Student Navigation Bar -->
+    <nav class="student-nav">
+        <a href="#myCourses" class="nav-item">My Courses</a>
+        <a href="allCourses.html" class="nav-item">Find Course</a>
+    </nav>
+
+    <div class="container">
+        <h1>Welcome, <span id="username"></span></h1>
+
+        <!-- Student Section -->
+        <div id="student-section">   
+            <div id="student-dashboard"></div>
+
+            <!-- My Courses Section -->
+            <div id="myCourses">
+                <h2>My Courses</h2>
+<div class="course-container">
+     
+
+<!--
+                
+               <div class="course-header">
+                        <a href="fullstack.html" class="course-title">Full Stack</a>
+                        <span class="lecturer-name">Nimer</span>
+                    </div>
+                    <p class="latest-update"><strong>Latest Update:</strong> API</p>
+                </div>
+
+                <div class="course-container">
+                    <div class="course-header">
+                        <a href="english.html" class="course-title">English</a>
+                        <span class="lecturer-name">Tamar Arieli</span>
+                    </div>
+                    <p class="latest-update"><strong>Latest Update:</strong> Unseen</p>
+                </div>
+ 
+-->
+               
+
+            </div>
+        </div>
+    </div>
+
+    <script src="js/studentDashboard.js">
+
+    </script>
+</body>
+
+</html>

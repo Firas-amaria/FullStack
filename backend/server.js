@@ -50,3 +50,6 @@ app.use("/admin", adminRoutes);
 
 const instructorRoutes = require("./routes/instructorRoutes");
 app.use("/instructor", instructorRoutes);
+
+const userRoutes = require("./routes/userRoutes");
+app.use("/users", userRoutes);
