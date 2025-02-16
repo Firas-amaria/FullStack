@@ -1,126 +1,115 @@
 const express = require("express");
 const Course = require("../models/Course");
-const {
-  authenticateUser,
-  authorizeRole,
-} = require("../middleware/authMiddleware");
+const { authenticateUser, authorizeRole } = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 /**
  * ✅ Create a New Course (Instructor Only)
  */
-router.post(
-  "/",
-  authenticateUser,
-  authorizeRole(["instructor"]),
-  async (req, res) => {
-    try {
-      const { title, description, materials } = req.body;
-      const newCourse = new Course({
-        title,
-        description,
-        materials,
-        instructor: req.user.userId, // Instructor is the logged-in user
-      });
-
-      await newCourse.save();
-      res
-        .status(201)
-        .json({ message: "Course created successfully", course: newCourse });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-);
-
-/**
- * ✅ Get All Courses (Public - Anyone Can View)
- */
-router.get("/", async (req, res) => {
+router.post("/", async (req, res) =>{
   try {
-    const courses = await Course.find().populate(
-      "instructor",
-      "username email"
-    );
-    res.json(courses);
+      const { courseName, courseDescription, instructorID } = req.body;
+
+      // יצירת קורס חדש
+      const course = new Course({ courseName, courseDescription, instructorID });
+      await course.save();
+
+      res.status(201).json(course);  // מחזירים את הקורס שנוצר
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+});
+
+// route לשליפת הקורסים של מורה לפי ה- ID שלו
+router.get('/courses/instructor/:instructorID', async (req, res) => {
+  try {
+    const { instructorID } = req.params;
+    const courses = await Course.find({ instructorID: instructorID });
+    res.status(200).json(courses); // החזר את הקורסים למערכת
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-/**
- * ✅ Get a Specific Course by ID
- */
-router.get("/:id", async (req, res) => {
+// route לשליפת כל הקורסים
+router.get('/courses', async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id).populate(
-      "instructor",
-      "username email"
-    );
-    if (!course) return res.status(404).json({ error: "Course not found" });
-
-    res.json(course);
+    const courses = await Course.find(); 
+    res.status(200).json(courses);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-/**
- * ✅ Update a Course (Instructor Only)
- */
-router.patch(
-  "/:id",
-  authenticateUser,
-  authorizeRole(["instructor"]),
-  async (req, res) => {
-    try {
-      const { title, description, materials } = req.body;
-      const updatedCourse = await Course.findOneAndUpdate(
-        { _id: req.params.id, instructor: req.user.userId }, // Only allow the course instructor to update
-        { title, description, materials },
-        { new: true }
-      );
+rrouter.get('/courses/search', async (req, res) => {
+  try {
+    const { query } = req.query;
 
-      if (!updatedCourse)
-        return res
-          .status(403)
-          .json({ error: "Unauthorized to update this course" });
-
-      res.json({
-        message: "Course updated successfully",
-        course: updatedCourse,
-      });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+    if (!query) {
+      return res.status(400).json({ error: "הפרמטר query חסר" });
     }
+
+    // בדוק אם השאילתא מחפשת לפי שם הקורס ולא ב-ID
+    const courses = await Course.find({ 
+      courseName: { $regex: query, $options: "i" } // חיפוש לפי שם קורס
+    });
+
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error("❌ שגיאה בחיפוש קורסים:", error.stack);
+    res.status(500).json({ error: error.message });
   }
-);
+});
 
-/**
- * ✅ Delete a Course (Instructor or Admin)
- */
-router.delete(
-  "/:id",
-  authenticateUser,
-  authorizeRole(["instructor", "admin"]),
-  async (req, res) => {
-    try {
-      const deletedCourse = await Course.findOneAndDelete({
-        _id: req.params.id,
-        instructor: req.user.role === "admin" ? undefined : req.user.userId,
-      });
 
-      if (!deletedCourse)
-        return res
-          .status(403)
-          .json({ error: "Unauthorized to delete this course" });
 
-      res.json({ message: "Course deleted successfully" });
-    } catch (error) {
-      res.status(500).json({ error: error.message });
+// Route למחיקת קורס
+router.delete("/courses/:courseId", async (req, res) => {
+  try {
+    const course = await Course.findByIdAndDelete(req.params.courseId);
+    if (!course) {
+      return res.status(404).send("Course not found");
     }
+    res.status(200).send("Course deleted successfully");
+  } catch (err) {
+    res.status(500).send("Error deleting course");
   }
-);
+});
+
+
+
+// Route לעדכון קורס
+router.put('/:courseId', async (req, res) => {
+  try {
+    const { courseId } = req.params;
+    const { courseName, courseDescription } = req.body;
+
+    const course = await Course.findByIdAndUpdate(courseId, { courseName, courseDescription }, { new: true });
+
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+
+// Route לשליפת קורס לפי ה-ID שלו
+router.get('/:courseId', async (req, res) => {
+  try {
+    const course = await Course.findById(req.params.courseId);
+    if (!course) {
+      return res.status(404).json({ error: "Course not found" });
+    }
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 module.exports = router;

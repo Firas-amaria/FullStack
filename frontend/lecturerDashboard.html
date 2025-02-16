@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lecture Dashboard</title>
+</head>
+<body>
+  <h1>Welcome to your Dashboard</h1>
+  <h2>Your Courses:</h2>
+  <div id="courses-list">
+    <!-- הקורסים יתווספו כאן -->
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:3000"; // כתובת ה-API שלך
+    const instructorID = localStorage.getItem("userID"); // מזהה המורה מתוך localStorage
+
+    // פונקציה לשליפת הקורסים של המורה
+    async function fetchInstructorCourses() {
+  const userID = localStorage.getItem("userID");
+console.log(userID)
+  const response = await fetch(`${API_URL}/courses/instructor/${userID}`, {
+    method: "GET",
+    headers: { "Authorization": `Bearer ${localStorage.getItem("token")}` }
+  });
+
+  if (response.ok) {
+    const courses = await response.json();
+    console.log(courses); // הדפסת הקורסים ב-console לבדוק מה מגיע מהשרת
+    displayCourses(courses); // הצגת הקורסים
+  } else {
+    console.error("Unable to fetch courses");
+  }
+}
+
+
+    // פונקציה להציג את הקורסים על הדף
+    function displayCourses(courses) {
+      const coursesListDiv = document.getElementById("courses-list");
+      coursesListDiv.innerHTML = ""; // נקה את רשימת הקורסים אם יש כבר משהו
+
+      if (courses.length === 0) {
+        coursesListDiv.innerHTML = "<p>You are not teaching any courses yet.</p>";
+      } else {
+        courses.forEach(course => {
+          const courseDiv = document.createElement("div");
+          courseDiv.classList.add("course");
+          courseDiv.innerHTML = `
+            <h3>${course.courseName}</h3>
+            <p>${course.courseDescription}</p>
+          `;
+          coursesListDiv.appendChild(courseDiv);
+        });
+      }
+    }
+
+    // קריאה לפונקציה לשליפת הקורסים כשנטען הדף
+    document.addEventListener("DOMContentLoaded", function() {
+      fetchInstructorCourses(); // שליפת הקורסים של המורה
+    });
+  </script>
+</body>
+</html>

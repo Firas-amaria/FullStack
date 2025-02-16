@@ -3,7 +3,7 @@ const API_URL = "http://localhost:3000";
 // ✅ Function to register a user
 async function registerUser(event) {
   event.preventDefault(); // Prevent page reload
-
+  const userID = document.getElementById("userID").value;
   const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
@@ -11,7 +11,7 @@ async function registerUser(event) {
   const response = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password }),
+    body: JSON.stringify({ userID, username, email, password }),
   });
 
   if (response.ok) {
@@ -44,18 +44,27 @@ async function loginUser(event) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("username", data.user.username);
     localStorage.setItem("role", data.user.role);
+    localStorage.setItem("userID", data.user.userID); // הוספת userID ל-localStorage
 
+
+  // console.log(username,role,userID )
     alert(`✅ Welcome, ${data.user.username}!`);
 
     // Redirect based on role
-    window.location.href =
-      data.user.role === "admin" ? "dashboard.html" : "courses.html";
+    if (data.user.role === "admin") {
+      window.location.href = "dashboard.html";
+    } else if (data.user.role === "instructor") {
+      window.location.href = "lecturerDashboard.html"; // Redirect to instructor dashboard
+    } else {
+      window.location.href = "courses.html"; // Redirect to courses page for regular users
+    }
   } else {
     const errorData = await response.json();
     document.getElementById("login-error").innerText = errorData.error;
     document.getElementById("login-error").style.display = "block";
   }
 }
+
 
 // ✅ Function to check if user is logged in
 function checkAuth() {
