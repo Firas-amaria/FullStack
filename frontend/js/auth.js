@@ -44,12 +44,18 @@ async function loginUser(event) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("username", data.user.username);
     localStorage.setItem("role", data.user.role);
+    localStorage.setItem("userID", data.user.userid);
 
     alert(`✅ Welcome, ${data.user.username}!`);
 
     // Redirect based on role
-    window.location.href =
-      data.user.role === "admin" ? "dashboard-admin.html" : "courses.html";
+    if (data.user.role === "admin") {
+      window.location.href = "dashboard-admin.html";
+    } else if (data.user.role === "instructor") {
+      window.location.href = "dashboard-instructor.html"; // Redirect to instructor dashboard
+    } else {
+      window.location.href = "courses.html"; // Redirect to courses page for regular users
+    }
   } else {
     const errorData = await response.json();
     document.getElementById("login-error").innerText = errorData.error;
